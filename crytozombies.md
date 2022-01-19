@@ -1089,3 +1089,170 @@ contract ERC721 {
   function approve(address _approved, uint256 _tokenId) external payable;
 }
 ````
+
+## Lesson 6
+### App Front-ends & Web3.js
+- <b>Infura</b> is a service that maintains a set of Ethereum nodes with a caching layer for fast reads, which you can access for free through their API. Using Infura as a provider, you can reliably send and receive messages to/from the Ethereum blockchain without needing to set up and maintain your own node.
+
+`const web3 = new Web3(new Web3.providers.WebsocketProvider("wss://mainnet.infura.io/ws"));`
+
+- <b>Metamask</b> is a browser extension for Chrome and Firefox that lets users securely manage their Ethereum accounts and private keys, and use these accounts to interact with websites that are using `Web3.js`. (If you haven't used it before, you'll definitely want to go and install it — then your browser is Web3 enabled, and you can now interact with any website that communicates with the Ethereum blockchain!).
+````
+window.addEventListener('load', function() {
+
+  // Checking if Web3 has been injected by the browser (Mist/MetaMask)
+  if (typeof web3 !== 'undefined') {
+    // Use Mist/MetaMask's provider
+    web3js = new Web3(web3.currentProvider);
+  } else {
+    // Handle the case where the user doesn't have web3. Probably
+    // show them a message telling them to install Metamask in
+    // order to use our app.
+  }
+
+  // Now you can start your app & access web3js freely:
+  startApp()
+})
+````
+- You can use this boilerplate code in all the apps you create in order to require users to have Metamask to use your DApp.
+
+- <b>Web3.js</b> will need 2 things to talk to your contract: its <b>address</b> and its <b>ABI</b>.
+    - After you deploy your contract, it gets a fixed address on Ethereum where it will live forever. 
+    - <b>ABI</b> stands for <b>Application Binary Interface</b>. Basically it's a representation of your contracts' methods in `JSON` format that tells `Web3.js` how to format function calls in a way your contract will understand.
+- <b>Web3.js</b> has two methods we will use to call functions on our contract: `call()` and `send()`.
+    - `call()` is used for `view` and `pure` functions. It only runs on the local node, and won't create a transaction on the blockchain.
+    
+    `myContract.methods.myMethod(123).call()`
+    - `send()` will create a transaction and change data on the blockchain. You'll need to use send for any functions that aren't `view` or `pure`.
+    
+    `myContract.methods.myMethod(123).send()`
+    
+> Note: 
+> All the code examples we're using in this lesson are using version 1.0 of Web3.js, which uses promises instead of callbacks. Many other tutorials you'll see online are using an older version of Web3.js. The syntax changed a lot with version 1.0, so if you're copying code from other tutorials, make sure they're using the same version as you!
+
+
+- saving data to the blockchain is one of the most expensive operations in Solidity. But using events is much much cheaper in terms of gas.
+    - The tradeoff here is that events are not readable from inside the smart contract itself. But it's an important use-case to keep in mind if you have some data you want to be historically recorded on the blockchain so you can read it from your app's front-end.
+
+### 📂 `index.html`
+````
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>CryptoZombies front-end</title>
+  <script language="javascript" type="text/javascript"
+    src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script language="javascript" type="text/javascript" src="web3.min.js"></script>
+  <script language="javascript" type="text/javascript" src="cryptozombies_abi.js"></script>
+</head>
+<body>
+  <div id="txStatus"></div>
+  <div id="zombies"></div>
+  <script>
+    var cryptoZombies;
+    var userAccount;
+
+    function startApp() {
+      var cryptoZombiesAddress = "YOUR_CONTRACT_ADDRESS";
+      cryptoZombies = new web3js.eth.Contract(cryptoZombiesABI, cryptoZombiesAddress);
+      var accountInterval = setInterval(function () {
+        if (web3.eth.accounts[0] !== userAccount) {
+          userAccount = web3.eth.accounts[0];
+
+          getZombiesByOwner(userAccount)
+            .then(displayZombies);
+        }
+      }, 100);
+
+      cryptoZombies.events.Transfer({ filter: { _to: userAccount } })
+        .on("data", function (event) {
+          let data = event.returnValues;
+          getZombiesByOwner(userAccount).then(displayZombies);
+        }).on("error", console.error);
+    }
+
+    function displayZombies(ids) {
+      $("#zombies").empty();
+      for (id of ids) {
+        getZombieDetails(id)
+          .then(function (zombie) {
+            $("#zombies").append(`<div class="zombie">
+              <ul>
+                <li>Name: ${zombie.name}</li>
+                <li>DNA: ${zombie.dna}</li>
+                <li>Level: ${zombie.level}</li>
+                <li>Wins: ${zombie.winCount}</li>
+                <li>Losses: ${zombie.lossCount}</li>
+                <li>Ready Time: ${zombie.readyTime}</li>
+              </ul>
+            </div>`);
+          });
+      }
+    }
+
+    function createRandomZombie(name) {
+      $("#txStatus").text("Creating new zombie on the blockchain. This may take a while...");
+
+      return cryptoZombies.methods.createRandomZombie(name)
+        .send({ from: userAccount })
+        .on("receipt", function (receipt) {
+          $("#txStatus").text("Successfully created " + name + "!");
+
+          getZombiesByOwner(userAccount).then(displayZombies);
+        })
+        .on("error", function (error) {
+
+          $("#txStatus").text(error);
+        });
+    }
+
+    function feedOnKitty(zombieId, kittyId) {
+      $("#txStatus").text("Eating a kitty. This may take a while...");
+      return cryptoZombies.methods.feedOnKitty(zombieId, kittyId)
+        .send({ from: userAccount })
+        .on("receipt", function (receipt) {
+          $("#txStatus").text("Ate a kitty and spawned a new Zombie!");
+          getZombiesByOwner(userAccount).then(displayZombies);
+        })
+        .on("error", function (error) {
+          $("#txStatus").text(error);
+        });
+    }
+
+    function levelUp(zombieId) {
+      $("#txStatus").text("Leveling up your zombie...");
+      return cryptoZombies.methods.levelUp(zombieId)
+        .send({ from: userAccount, value: web3.utils.toWei("0.001", "ether") })
+        .on("receipt", function (receipt) {
+          $("#txStatus").text("Power overwhelming! Zombie successfully leveled up");
+        })
+        .on("error", function (error) {
+          $("#txStatus").text(error);
+        });
+    }
+
+    function getZombieDetails(id) {
+      return cryptoZombies.methods.zombies(id).call()
+    }
+
+    function zombieToOwner(id) {
+      return cryptoZombies.methods.zombieToOwner(id).call()
+    }
+
+    function getZombiesByOwner(owner) {
+      return cryptoZombies.methods.getZombiesByOwner(owner).call()
+    }
+
+    window.addEventListener('load', function () {
+      if (typeof web3 !== 'undefined') {
+        web3js = new Web3(web3.currentProvider);
+      } else {
+      }
+      startApp()
+    })
+  </script>
+</body>
+
+</html>
+````
