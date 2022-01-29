@@ -6,3 +6,5 @@
 `npm i --save semantic-ui-react`
 
 `npm i --save semantic-ui-css`
+
+`npm run dev`
