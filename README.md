@@ -4,3 +4,5 @@
 `npm install next react react-dom`
 
 `npm i --save semantic-ui-react`
+
+`npm i --save semantic-ui-css`
