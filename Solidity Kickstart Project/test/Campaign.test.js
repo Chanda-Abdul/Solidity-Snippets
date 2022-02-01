@@ -76,9 +76,8 @@ describe("Campaigns", () => {
         from: accounts[0],
         gas: "1500000",
       });
-    //review this
-    const request = await campaign.methods.requests().call();
-    assert("Buy batteries", request.requestCount.description);
+    const request = await campaign.methods.requests(0).call();
+    assert("Buy batteries", request.requestCount);
   });
 
   it("processes requests", async () => {
