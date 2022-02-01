@@ -3,13 +3,13 @@ const solc = require("solc");
 const fs = require("fs-extra"); //file system extras
 
 const buildPath = path.resolve(__dirname, "build");
-// const contractFileName = "Campaign.sol";
+const contractFileName = "Campaign.sol";
 
 //delete the entire build folder if it exists
 fs.removeSync(buildPath);
 
 //read Campaign.sol from contracts folder
-const campaignPath = path.resolve(__dirname, "contracts", "Campaign.sol");
+const campaignPath = path.resolve(__dirname, "contracts", contractFileName);
 //read the source code of the file with encoding etf
 const source = fs.readFileSync(campaignPath, "utf8");
 
@@ -22,45 +22,35 @@ const source = fs.readFileSync(campaignPath, "utf8");
  */
 const input = {
   language: "Solidity",
-  sources: {
-    "Campaign.sol": {
-      content: source,
-    },
-  },
+  sources: {},
   settings: {
+    metadata: {
+      useLiteralContent: true,
+    },
     outputSelection: {
       "*": {
-        "*": ["abi", "evm.bytecode"],
+        "*": ["*"],
+        // "*": ["abi", "evm.bytecode"],
       },
     },
   },
 };
 
-// input.sources[contractFileName] = {
-//   content: source,
-// };
+input.sources[contractFileName] = {
+  content: source,
+};
 
 //use sol compiler to compile both contracts
 const output = JSON.parse(solc.compile(JSON.stringify(input)));
-// const contracts = output.contracts[contractFileName];
+const contracts = output.contracts[contractFileName];
 
 //write the output to the build directory
 fs.ensureDirSync(buildPath); //ensure that the directory exists
 // console.log(output);
 
-// loop over output and write each contract to different file in build directory
-if (output.errors) {
-  output.errors.forEach((err) => {
-    console.log(err.formattedMessage);
-  });
-} else {
-  const contracts = output.contracts["Campaign.sol"];
-  for (let contractName in contracts) {
-    const contract = contracts[contractName];
-    fs.writeFileSync(
-      path.resolve(buildPath, `${contractName}.json`),
-      JSON.stringify(contract.abi, null, 2),
-      "utf8"
-    );
+// Extract and write the JSON representations of the contracts to the build folder.
+for (let contract in contracts) {
+  if (contracts.hasOwnProperty(contract)) {
+    fs.outputJsonSync(path.resolve(buildPath, `${contract}.json`), contracts[contract]);
   }
 }
