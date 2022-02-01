@@ -7,4 +7,8 @@
 
 `npm i --save semantic-ui-css`
 
+`node ethereum/compile.js`
+
+`node ethereum/deploy.js`
+
 `npm run dev`
