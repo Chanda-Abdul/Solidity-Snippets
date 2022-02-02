@@ -1,9 +1,15 @@
 # CryptoZombies
+
 https://cryptozombies.io/
 
-## Lesson 1
+<details>
+  <summary>
+  <b>Lesson 1</b> - Basics
+</summary>
+
 ### 📂 `contract.sol`
-````
+
+```
 pragma solidity ^0.4.25;
 
 contract ZombieFactory {
@@ -36,10 +42,18 @@ contract ZombieFactory {
     }
 
 }
-````
-## Lesson 2
+```
+
+</details>
+
+<details>
+  <summary>
+  <b>Lesson 2</b>
+</summary>
+
 ### 📂 `zombiefactory.sol`
-````
+
+```
 pragma solidity ^0.4.25;
 
 contract ZombieFactory {
@@ -79,9 +93,11 @@ contract ZombieFactory {
     }
 
 }
-````
+```
+
 ### 📂 `zombiefeeding.sol`
-````
+
+```
 pragma solidity ^0.4.25;
 
 import "./zombiefactory.sol";
@@ -124,12 +140,20 @@ contract ZombieFeeding is ZombieFactory {
   }
 
 }
-````
+```
 
-## Lesson 3
+</details>
+
+<details>
+  <summary>
+  <b>Lesson 3</b>
+</summary>
+
 ### 📂 `ownable.sol`
+
 ☝️ from [OpenZeppelin](https://docs.openzeppelin.com/contracts/4.x/)
-````
+
+```
 pragma solidity ^0.4.25;
 
 /**
@@ -205,9 +229,11 @@ contract Ownable {
     _owner = newOwner;
   }
 }
-````
+```
+
 ### 📂 `zombiefactory.sol`
-````
+
+```
 pragma solidity ^0.4.25;
 
 import "./ownable.sol";
@@ -251,9 +277,11 @@ contract ZombieFactory is Ownable {
         _createZombie(_name, randDna);
     }
 }
-````
+```
+
 ### 📂 `zombiefeeding.sol`
-````
+
+```
 pragma solidity ^0.4.25;
 
 import "./zombiefactory.sol";
@@ -298,9 +326,11 @@ contract ZombieFeeding is ZombieFactory {
     feedAndMultiply(_zombieId, kittyDna, "kitty");
   }
 }
-````
+```
+
 ### 📂 `zombiehelper.sol`
-````
+
+```
 pragma solidity ^0.4.25;
 
 import "./zombiefeeding.sol";
@@ -334,27 +364,36 @@ contract ZombieHelper is ZombieFeeding {
     return result;
   }
 }
-````
-## Lesson 4
+```
+
+</details>
+
+<details>
+  <summary>
+  <b>Lesson 4</b> - Function Modifiers
+</summary>
+
 ### Function Modifiers
-- We have <b>visibility modifiers</b> that control when and where the function can be called from: 
-    - `private` means it's only callable from other functions inside the contract; 
-    - `internal` is like private but can also be called by contracts that inherit from this one; 
-    - `external` can only be called outside the contract; and finally public can be called anywhere, both internally and externally.
-- We also have <b>state modifiers</b>, which tell us how the function interacts with the BlockChain: 
-    - `view` tells us that by running the function, no data will be saved/changed. 
-    - `pure` tells us that not only does the function not save any data to the blockchain, but it also doesn't read any data from the blockchain. 
-    - Both of these don't cost any gas to call if they're called externally from outside the contract (but they do cost gas if called internally by another function).
-- Then we have <b>custom modifiers</b>, which we learned about in Lesson 3: 
-    - `onlyOwner` and `aboveLevel`, for example. For these we can define custom logic to determine how they affect a function.
-- Then we have <b>payable modifiers</b> a special type of function that can receive Ether.  This allows for some really interesting logic, like requiring a certain payment to the contract in order to execute a function.
+
+- We have <b>visibility modifiers</b> that control when and where the function can be called from:
+  - `private` means it's only callable from other functions inside the contract;
+  - `internal` is like private but can also be called by contracts that inherit from this one;
+  - `external` can only be called outside the contract; and finally public can be called anywhere, both internally and externally.
+- We also have <b>state modifiers</b>, which tell us how the function interacts with the BlockChain:
+  - `view` tells us that by running the function, no data will be saved/changed.
+  - `pure` tells us that not only does the function not save any data to the blockchain, but it also doesn't read any data from the blockchain.
+  - Both of these don't cost any gas to call if they're called externally from outside the contract (but they do cost gas if called internally by another function).
+- Then we have <b>custom modifiers</b>, which we learned about in Lesson 3:
+  - `onlyOwner` and `aboveLevel`, for example. For these we can define custom logic to determine how they affect a function.
+- Then we have <b>payable modifiers</b> a special type of function that can receive Ether. This allows for some really interesting logic, like requiring a certain payment to the contract in order to execute a function.
 
 These modifiers can all be stacked together on a function definition as follows:
 
 `function test() external view onlyOwner anotherModifier { /* ... */ }`
 
 ### 📂 `zombieattack.sol`
-````
+
+```
 pragma solidity ^0.4.25;
 
 import "./zombiehelper.sol";
@@ -384,9 +423,11 @@ contract ZombieAttack is ZombieHelper {
     }
   }
 }
-````
+```
+
 ### 📂 `zombiehelper.sol`
-````
+
+```
 pragma solidity ^0.4.25;
 
 import "./zombiefeeding.sol";
@@ -434,9 +475,11 @@ contract ZombieHelper is ZombieFeeding {
     return result;
   }
 }
-````
+```
+
 ### 📂 `zombiefeeding.sol`
-````
+
+```
 pragma solidity ^0.4.25;
 
 import "./zombiefactory.sol";
@@ -495,9 +538,11 @@ contract ZombieFeeding is ZombieFactory {
     feedAndMultiply(_zombieId, kittyDna, "kitty");
   }
 }
-````
+```
+
 ### 📂 `zombiefactory.sol`
-````
+
+```
 pragma solidity ^0.4.25;
 
 import "./ownable.sol";
@@ -543,10 +588,13 @@ contract ZombieFactory is Ownable {
         _createZombie(_name, randDna);
     }
 }
-````
+```
+
 ### 📂 `ownable.sol`
+
 ☝️ from [OpenZeppelin](https://docs.openzeppelin.com/contracts/4.x/)
-````
+
+```
 pragma solidity ^0.4.25;
 
 /**
@@ -622,9 +670,15 @@ contract Ownable {
     _owner = newOwner;
   }
 }
-````
+```
 
-## Lesson 5 
+</details>
+
+<details>
+  <summary>
+  <b>Lesson 5</b> - ERC721 & Crypto-Collectibles
+</summary>
+
 ☝️ Tokens
 
 ☝️ The <b>ERC721</b> standard
@@ -638,9 +692,10 @@ contract Ownable {
 ☝️ Commenting your code and the `natspec`
 
 ### 📂 `zombieownership.sol`
-````
 
-   
+```
+
+
 pragma solidity ^0.4.25;
 
 import "./zombieattack.sol";
@@ -678,9 +733,11 @@ contract ZombieOwnership is ZombieAttack, ERC721 {
       emit Approval(msg.sender, _approved, _tokenId);
     }
 }
-````
+```
+
 ### 📂 `zombiehelper.sol`
-````
+
+```
 pragma solidity ^0.4.25;
 
 import "./zombiefeeding.sol";
@@ -729,9 +786,11 @@ contract ZombieHelper is ZombieFeeding {
   }
 
 }
-````
+```
+
 ### 📂 `zombiefeeding.sol`
-````
+
+```
 pragma solidity ^0.4.25;
 
 import "./zombiefactory.sol";
@@ -790,9 +849,11 @@ contract ZombieFeeding is ZombieFactory {
     feedAndMultiply(_zombieId, kittyDna, "kitty");
   }
 }
-````
+```
+
 ### 📂 `zombiefactory.sol`
-````
+
+```
 pragma solidity ^0.4.25;
 
 import "./ownable.sol";
@@ -844,9 +905,11 @@ contract ZombieFactory is Ownable {
   }
 
 }
-````
+```
+
 ### 📂 `zombieattack.sol`
-````
+
+```
 pragma solidity ^0.4.25;
 
 import "./zombiehelper.sol";
@@ -876,9 +939,11 @@ contract ZombieAttack is ZombieHelper {
     }
   }
 }
-````
+```
+
 ### 📂 `safemath.sol`
-````
+
+```
 pragma solidity ^0.4.25;
 
 /**
@@ -994,10 +1059,13 @@ library SafeMath16 {
     return c;
   }
 }
-````
+```
+
 ### 📂 `ownable.sol`
+
 ☝️ from [OpenZeppelin](https://docs.openzeppelin.com/contracts/4.x/)
-````
+
+```
 pragma solidity ^0.4.25;
 
 /**
@@ -1073,10 +1141,13 @@ contract Ownable {
     _owner = newOwner;
   }
 }
-````
+```
+
 ### 📂 `erc721.sol`
+
 ☝️ from [OpenZeppelin](https://docs.openzeppelin.com/contracts/4.x/)
-````
+
+```
 pragma solidity ^0.4.25;
 
 contract ERC721 {
@@ -1088,16 +1159,24 @@ contract ERC721 {
   function transferFrom(address _from, address _to, uint256 _tokenId) external payable;
   function approve(address _approved, uint256 _tokenId) external payable;
 }
-````
+```
 
-## Lesson 6
+</details>
+
+<details>
+  <summary>
+  <b>Lesson 6</b> - App Front-ends & Web3.js
+</summary>
+
 ### App Front-ends & Web3.js
+
 - <b>Infura</b> is a service that maintains a set of Ethereum nodes with a caching layer for fast reads, which you can access for free through their API. Using Infura as a provider, you can reliably send and receive messages to/from the Ethereum blockchain without needing to set up and maintain your own node.
 
 `const web3 = new Web3(new Web3.providers.WebsocketProvider("wss://mainnet.infura.io/ws"));`
 
 - <b>Metamask</b> is a browser extension for Chrome and Firefox that lets users securely manage their Ethereum accounts and private keys, and use these accounts to interact with websites that are using `Web3.js`. (If you haven't used it before, you'll definitely want to go and install it — then your browser is Web3 enabled, and you can now interact with any website that communicates with the Ethereum blockchain!).
-````
+
+```
 window.addEventListener('load', function() {
 
   // Checking if Web3 has been injected by the browser (Mist/MetaMask)
@@ -1113,29 +1192,28 @@ window.addEventListener('load', function() {
   // Now you can start your app & access web3js freely:
   startApp()
 })
-````
+```
+
 - You can use this boilerplate code in all the apps you create in order to require users to have Metamask to use your DApp.
 
 - <b>Web3.js</b> will need 2 things to talk to your contract: its <b>address</b> and its <b>ABI</b>.
-    - After you deploy your contract, it gets a fixed address on Ethereum where it will live forever. 
-    - <b>ABI</b> stands for <b>Application Binary Interface</b>. Basically it's a representation of your contracts' methods in `JSON` format that tells `Web3.js` how to format function calls in a way your contract will understand.
+  - After you deploy your contract, it gets a fixed address on Ethereum where it will live forever.
+  - <b>ABI</b> stands for <b>Application Binary Interface</b>. Basically it's a representation of your contracts' methods in `JSON` format that tells `Web3.js` how to format function calls in a way your contract will understand.
 - <b>Web3.js</b> has two methods we will use to call functions on our contract: `call()` and `send()`.
-    - `call()` is used for `view` and `pure` functions. It only runs on the local node, and won't create a transaction on the blockchain.
-    
-    `myContract.methods.myMethod(123).call()`
-    - `send()` will create a transaction and change data on the blockchain. You'll need to use send for any functions that aren't `view` or `pure`.
-    
-    `myContract.methods.myMethod(123).send()`
-    
-> Note: 
+  - `call()` is used for `view` and `pure` functions. It only runs on the local node, and won't create a transaction on the blockchain.
+  `myContract.methods.myMethod(123).call()`
+  - `send()` will create a transaction and change data on the blockchain. You'll need to use send for any functions that aren't `view` or `pure`.
+  `myContract.methods.myMethod(123).send()`
+
+> Note:
 > All the code examples we're using in this lesson are using version 1.0 of Web3.js, which uses promises instead of callbacks. Many other tutorials you'll see online are using an older version of Web3.js. The syntax changed a lot with version 1.0, so if you're copying code from other tutorials, make sure they're using the same version as you!
 
-
 - saving data to the blockchain is one of the most expensive operations in Solidity. But using events is much much cheaper in terms of gas.
-    - The tradeoff here is that events are not readable from inside the smart contract itself. But it's an important use-case to keep in mind if you have some data you want to be historically recorded on the blockchain so you can read it from your app's front-end.
+  - The tradeoff here is that events are not readable from inside the smart contract itself. But it's an important use-case to keep in mind if you have some data you want to be historically recorded on the blockchain so you can read it from your app's front-end.
 
 ### 📂 `index.html`
-````
+
+```
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1255,4 +1333,4 @@ window.addEventListener('load', function() {
 </body>
 
 </html>
-````
+```
