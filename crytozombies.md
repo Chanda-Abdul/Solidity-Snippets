@@ -1343,7 +1343,86 @@ window.addEventListener('load', function() {
   <b>Chainlink and oracles</b> 
 </summary>
 
-- Blockchain Oracles are devices that connect our smart contracts and zombies with data and computation from the real world, such as pricing data on currencies, random number generators, and any other data we can think of. Blockchains can't interact with the outside world, as they are intentionally isolated and deterministic by nature.
+- <b>Blockchain Oracles</b> are devices that connect our smart contracts and zombies with data and computation from the real world, such as pricing data on currencies, random number generators, and any other data we can think of. <b>Blockchains</b> can't interact with the outside world, as they are intentionally isolated and deterministic by nature.
 - When your smart contracts include data or computation from oracles, they are considered hybrid smart contracts, 
+- <b>Chainlink</b> is a framework for <b>decentralized oracle networks (DONs)</b>, and is a way to get data in from multiple sources across multiple oracles. This <b>DON</b> aggregates data in a decentralized manner and places it on the blockchain in a smart contract (often referred to as a "price reference feed" or "data feed") for us to read from. So all we have to do, is read from a contract that the Chainlink network is constantly updating for us!
+- The first step is when a smart contract (called the <b>"callee contract"</b>) makes a <b>"request"</b> to a Chainlink node which is comprised of a smart contract and the corresponding off-chain node. When it receives the request, the smart contract emits a specific event that the corresponding Chainlink node is subscribed to/looking for. This happens in one transaction.
+- The Chainlink oracle will then process the request (be it randomness, a data request, etc), and return the data/computation back to the callee contract, or a contract that will in turn send the response to the callee contract. This <b>"middle" contract</b> is often referred to as the <b>"oracle contract"</b>. This return process happens in a second separate transaction, so in total the basic request model is a two transaction event, and therefore, will take at the very minimum two blocks to complete.
+- This two transaction architecture is important, because it means that brute force attacks on randomness or data requests are throttled and impossible to hack without costing the attacker insane fees in gas costs.
+-  The [Chainlink Verifiable Randomness Function (Chainlink VRF)](https://docs.chain.link/docs/vrf-contracts/) is a way to get randomness from outside the blockchain, but in a proven cryptographic manner. This is important because we always want our logic to be truly incorruptible. Another naive attempt at getting randomness outside the blockchain would be to use an off-chain API call to a service that returns a random number. But if that services goes down, is bribed, hacked, or otherwise, you could potentially be getting back a corrupt random number. Chainlink VRF includes on-chain verification contracts that cryptographically prove that the random number the contract is getting is really random.
+-  you can learn more about Chainlink and random numbers by following the [Random Numbers Tutorial](https://docs.chain.link/docs/intermediates-tutorial/).
+    
+### 📂 `contract.sol`
+    
+````
+pragma solidity ^0.6.6;
+
+import "@chainlink/contracts/src/v0.6/VRFConsumerBase.sol";
+
+contract ZombieFactory is VRFConsumerbase {
+
+    uint dnaDigits = 16;
+    uint dnaModulus = 10 ** dnaDigits;
+
+    bytes32 public keyHash;
+    uint256 public fee;
+    uint256 public randomResult;
+
+    struct Zombie {
+        string name;
+        uint dna;
+    }
+
+    Zombie[] public zombies;
+
+    constructor() VRFConsumerBase(
+        0xb3dCcb4Cf7a26f6cf6B120Cf5A73875B7BBc655B, // VRF Coordinator
+        0x01BE23585060835E02B77ef475b0Cc51aA1e0709  // LINK Token
+    ) public{
+        keyHash = 0x2ed0feb3e7fd2022120aa84fab1945545a9f2ffc9076fd6156fa96eaff4c1311;
+        fee = 100000000000000000;
+
+    }
+
+    function _createZombie(string memory _name, uint _dna) private {
+        zombies.push(Zombie(_name, _dna));
+    }
+
+
+    function getRandomNumber() public returns (bytes32 requestId) {
+        return requestRandomness(keyHash, fee);
+    }
+
+    function fulfillRandomness(bytes32 requestId, uint256 randomness) internal override {
+        randomResult = randomness;
+    }
+}
+````
+    
+ ### 📂 `PriceConsumerV3.sol`
+````
+ pragma solidity ^0.6.7;
+    
+ import "@chainlink/contracts/src/v0.6/interfaces/AggregatorV3Interface.sol";
+    
+ contract PriceConsumerV3 {
+    AggregatorV3Interface public priceFeed;
+
+    constructor() public {
+      priceFeed = AggregatorV3Interface(0x8A753747A1Fa494EC906cE90E9f37563A8AF630e);
+    }
+
+    function getLatestPrice() public view returns (int) {
+      (,int price,,,) = priceFeed.latestRoundData();
+      return price;
+    }
+
+    function getDecimals() public view returns (uint8) {
+      uint8 decimals = priceFeed.decimals();
+      return decimals;
+    }
+  }
+````
+
     
 </details>
