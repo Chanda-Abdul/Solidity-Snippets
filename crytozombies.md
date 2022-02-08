@@ -1426,3 +1426,37 @@ contract ZombieFactory is VRFConsumerbase {
 
     
 </details>
+  
+  <details>
+  <summary>
+  <b>Testing Smart Contracts with Truffle</b> 
+</summary>
+    
+- <b>Truffle</b> provides support for tests written in JavaScript and Solidity
+Every time you compile a smart contract, the Solidity compiler generates a JSON file (referred to as build artifacts) which contains the binary representation of that contract and saves it in the build/contracts folder.
+- Next, when you run a migration, Truffle updates this file with the information related to that network.
+- The first thing you'll need to do every time you start writing a new test suite is to load the build artifacts of the contract you want to interact with. This way, Truffle will know how to format our function calls in a way the contract will understand.
+    `const myAwesomeContract = artifacts.require(“myAwesomeContract”);`
+- Truffle adds a thin wrapper around <b>Mocha</b> in order to make testing simpler.
+  - group tests by calling a function named `contract()`. It extends Mocha's `describe()` by providing a list of accounts for testing and doing some cleanup as well.
+  - `contract()` takes two arguments. The first one, a string, must indicate what we’re going to test. The second parameter, a callback, is where we’re going to actually write our tests.
+  - execute them: the way we’ll be doing this is by calling a function named `it()` which also takes two arguments: a string that describes what the test actually does and a callback.
+  ````
+  contract("MyAwesomeContract", (accounts) => {
+    it("should be able to receive Ethers", () => {
+     })
+   })
+  ````
+- Before deploying to Ethereum, it is best to test your smart contracts locally. You can do so by using a tool called <b>Ganache</b>, which sets up a local Ethereum network.
+    - Every time Ganache starts, it creates 10 test accounts and gives them 100 Ethers to make testing easier. Since Ganache and Truffle are tightly integrated we can access these accounts through the accounts array we've mentioned in the previous chapter.
+    
+- Usually, every test has the following phases:
+    1. `set up`: in which we define the initial state and initialize the inputs.
+
+    2. `act`: where we actually test the code. Always make sure you test only one thing.
+
+    3. `assert`: where we check the results.
+- and <b>Chai</b> assertion modules.
+    - `expect(result.receipt.status).to.equal(true);`
+
+</details>
