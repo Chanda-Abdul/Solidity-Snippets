@@ -26,6 +26,19 @@ contract MyContract {
     }
 }
 ````
+
+`npm install truffle -g`
+
+`npx truffle init`
+
+`npm install truffle-hdwallet-provider`
+
+`npx truffle compile`
+
+`npx  truffle migrate --network rinkeby`
+
+`npx truffle migrate --network basechain`
+
 `npm install @truffle/hdwallet-provider ganache-cli mocha solc fs-extra web3 dotenv`
 
 `npm install next react react-dom`
