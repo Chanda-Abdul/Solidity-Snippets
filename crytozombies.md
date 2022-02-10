@@ -1460,3 +1460,42 @@ Every time you compile a smart contract, the Solidity compiler generates a JSON 
     - `expect(result.receipt.status).to.equal(true);`
 
 </details>
+  
+  <details>
+  <summary>
+  <b>Deploying DApps with Truffle</b>
+</summary>
+    
+[Truffle Documentation](https://trufflesuite.com/docs/truffle/getting-started/running-migrations)
+
+`npm install package_name -g`
+    
+`npx truffle init`
+    
+- running the truffle init command inside of the directory, should create several directories and some JavaScript and Solidity files. 
+  - <b>contracts</b>: this is the place where Truffle expects to find all our smart contracts. To keep the code organized, we can even create nested folders such as contracts/tokens. Pretty neat😉.
+  - <b>migrations</b>: a migration is a JavaScript file that tells Truffle how to deploy a smart contract.
+
+  - <b>test</b>: here we are expected to put the unit tests which will be JavaScript or Solidity files. Remember, once a contract is deployed it can't be changed, making it essential that we test our smart contracts before we deploy them.
+
+  - `truffle.js` and `truffle-config.js`: config files used to store the network settings for deployment. Truffle needs two config files because on Windows having both `truffle.js` and `truffle.exe` in the same folder might generate conflicts. Long story short - if you are running Windows, it is advised to delete `truffle.js` and use `truffle-config.js` as the default config file. Check out Truffle's official documentation to further your understanding.
+    
+- Since deploying a smart contract requires Truffle to sign transactions, we are going to need a tool called `truffle-hdwallet-provider`. Its only purpose is to handle the transaction signing.
+
+  - `npm install truffle-hdwallet-provider`
+    
+- The <b>Ethereum Virtual Machine</b> can't directly understand Solidity source code as we write it. Thus, we need to run a compiler that will "translate" our smart contract into machine-readable <b>bytecode</b>. The virtual machine then executes the <b>bytecode</b>, and completes the actions required by our smart contract.
+    
+- making a function `pure` or `view` saves us gas. Since these functions are not going to modify the state of the blockchain, there is no need for miners to execute them. To put it in a few words, pure and view functions can be called for free.
+    
+  - `npx truffle compile`
+    
+- before deploying to Ethereum, you would want to test your smart contract locally. You can do this using a tool called <b>Ganache</b>, which sets up a local Ethereum network.
+    
+- To deploy to Ethereum we will have to create something called a migration.  <b>Migrations</b> are JavaScript files that help Truffle deploy the code to Ethereum. Note that truffle init created a special contract called `Migrations.sol` that keeps track of the changes you're making to your code. The way it works is that the history of changes is saved onchain. Thus, there's no way you will ever deploy the same code twice.
+    
+- <b>Rinkeby</b>, a public test network created by The Ethereum Foundation.
+  - it's time to deploy to Rinkeby. To do so, run `npx  truffle migrate --network rinkeby`
+  - Deployment to the main net is not complicated at all. Once the smart contract is tested, you'll only have to run: `npx truffle migrate --network mainnet`. Don't forget that you'll have to pay for gas! 
+    
+</details>
