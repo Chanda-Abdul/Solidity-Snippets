@@ -11,12 +11,18 @@ npm install --save-dev @nomiclabs/hardhat-waffle ethereum-waffle chai @nomiclabs
 npx hardhat accounts
 npx hardhat compile
 npx hardhat test
+````
+````
 npx hardhat run scripts/run.js
 ````
+- `run.js` is like our testing grounds where we want to make sure our contracts core functionality works before we go and deploy it. It's really hard to debug contract code and frontend code at the same time, so, we separate it out!
 
 ### ✈️ Re-deploy
 So, now that we've updated our contract we need to do a few things:
 1. We need to deploy it again.
+````
+npx hardhat run scripts/deploy.js
+````
 2. We need to update the contract address on our frontend.
 3. We need to update the abi file on our frontend. 
 
